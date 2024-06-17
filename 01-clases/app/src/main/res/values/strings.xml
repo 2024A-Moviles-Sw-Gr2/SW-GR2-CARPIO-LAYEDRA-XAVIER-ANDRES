@@ -1,3 +1,9 @@
 <resources>
     <string name="text1">Texto para Lands</string>
+    <string-array name="string_array_opciones">
+        <item>Lunes</item>
+        <item>Martes</item>
+        <item>Miercoles</item>
+    </string-array>
+
 </resources>
