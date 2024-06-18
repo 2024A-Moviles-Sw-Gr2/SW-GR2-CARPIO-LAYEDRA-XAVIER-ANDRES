@@ -1,9 +1,5 @@
 import java.io.*
-import java.text.SimpleDateFormat
 import java.util.*
-
-
-const val peliculaFile="src/main/resources/Peliculas_DB.txt"
 
 data class Pelicula(
     var nombre: String,
@@ -11,8 +7,9 @@ data class Pelicula(
     var duracionMs: Double,
     var enCartelera: Boolean,
     var cantidadActores: Int,
-    var director: Director
 ) : Serializable
+
+const val peliculaFile = "src/main/resources/Peliculas_DB.txt"
 
 fun savePeliculas(peliculas: List<Pelicula>) {
     ObjectOutputStream(FileOutputStream(peliculaFile)).use { it.writeObject(peliculas) }
@@ -28,11 +25,30 @@ fun loadPeliculas(): MutableList<Pelicula> {
 
 fun createPelicula(pelicula: Pelicula) {
     val peliculas = loadPeliculas()
-    peliculas.add(pelicula)
-    savePeliculas(peliculas)
+    if (peliculas.none { it.nombre.equals(pelicula.nombre, ignoreCase = true) }) {
+        peliculas.add(pelicula)
+        savePeliculas(peliculas)
+    } else {
+        println("La película con nombre ${pelicula.nombre} ya existe.")
+    }
 }
 
+fun readPeliculas(nombre: String?) {
+    print("\t\t ****** \n")
+    val peliculas = loadPeliculas()
+    val peliculaEncontrada = peliculas.find { it.nombre.equals(nombre, ignoreCase = true) }
+    if (peliculaEncontrada != null) {
+        println("Nombre: ${peliculaEncontrada.nombre}")
+        println("Fecha de estreno: ${peliculaEncontrada.fechaEstreno}")
+        println("Duración: ${peliculaEncontrada.duracionMs} ms")
+        println("En cartelera: ${peliculaEncontrada.enCartelera}")
+        println("Cantidad de actores: ${peliculaEncontrada.cantidadActores}")
+    } else {
+        println("No se encontró una película con el nombre $nombre.")
+    }
+}
 fun readPeliculas() {
+    print("\t\t ****** \n")
     val peliculas = loadPeliculas()
     peliculas.forEach { pelicula ->
         println("Nombre: ${pelicula.nombre}")
@@ -40,18 +56,21 @@ fun readPeliculas() {
         println("Duración: ${pelicula.duracionMs} ms")
         println("En cartelera: ${pelicula.enCartelera}")
         println("Cantidad de actores: ${pelicula.cantidadActores}")
-        println("Director: ${pelicula.director.nombre}")
-        println()  // Salto de línea entre cada película
+        println() // Salto de línea entre cada película
+        print("\t\t ****** \n")
     }
 }
 
 
+
 fun updatePelicula(nombre: String, updatedPelicula: Pelicula) {
     val peliculas = loadPeliculas()
-    val index = peliculas.indexOfFirst { it.nombre == nombre }
+    val index = peliculas.indexOfFirst { it.nombre.equals(nombre, ignoreCase = true) }
     if (index != -1) {
         peliculas[index] = updatedPelicula
         savePeliculas(peliculas)
+    } else {
+        println("La película con nombre $nombre no se encontró.")
     }
 }
 
@@ -59,7 +78,7 @@ fun deletePelicula(nombre: String) {
     val peliculas = loadPeliculas()
     val iterator = peliculas.iterator()
     while (iterator.hasNext()) {
-        if (iterator.next().nombre == nombre) {
+        if (iterator.next().nombre.equals(nombre, ignoreCase = true)) {
             iterator.remove()
             break
         }

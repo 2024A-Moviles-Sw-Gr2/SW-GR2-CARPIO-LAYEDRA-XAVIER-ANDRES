@@ -1,8 +1,6 @@
 import java.io.*
 import java.util.*
 
-const val directorFile = "src/main/resources/Directores_DB.txt"
-
 data class Director(
     var nombre: String,
     var fechaNacimiento: Date,
@@ -11,14 +9,13 @@ data class Director(
     var enRodaje: Boolean
 ) : Serializable
 
+const val directorFile = "src/main/resources/Directores_DB.txt"
 
-fun saveDirectors(directors: List<Director>) {
-    val file = File(directorFile)
-
-    ObjectOutputStream(FileOutputStream(directorFile)).use { it.writeObject(directors) }
+fun saveDirectores(directores: List<Director>) {
+    ObjectOutputStream(FileOutputStream(directorFile)).use { it.writeObject(directores) }
 }
 
-fun loadDirectors(): MutableList<Director> {
+fun loadDirectores(): MutableList<Director> {
     return try {
         ObjectInputStream(FileInputStream(directorFile)).use { it.readObject() as MutableList<Director> }
     } catch (e: FileNotFoundException) {
@@ -27,37 +24,62 @@ fun loadDirectors(): MutableList<Director> {
 }
 
 fun createDirector(director: Director) {
-    val directors = loadDirectors()
-    directors.add(director)
-    saveDirectors(directors)
+    val directores = loadDirectores()
+    if (directores.none { it.nombre.equals(director.nombre, ignoreCase = true) }) {
+        directores.add(director)
+        saveDirectores(directores)
+    } else {
+        println("El director con nombre ${director.nombre} ya existe.")
+    }
 }
 
-fun readDirectors() = loadDirectors().forEach { director ->
-    println("Nombre: ${director.nombre}")
-    println("Fecha de nacimiento: ${director.fechaNacimiento}")
-    println("Películas dirigidas: ${director.peliculasDirigidas}")
-    println("Calificación IMDB: ${director.calificacionIMDB}")
-    println("En rodaje: ${director.enRodaje}")
-    println()  // Salto de línea entre cada director
+fun readDirectores(nombre: String?) {
+    val directores = loadDirectores()
+    val directorEncontrado = directores.find { it.nombre.equals(nombre, ignoreCase = true) }
+    if (directorEncontrado != null) {
+        println("Nombre: ${directorEncontrado.nombre}")
+        println("Fecha de nacimiento: ${directorEncontrado.fechaNacimiento}")
+        println("Películas dirigidas: ${directorEncontrado.peliculasDirigidas}")
+        println("Calificación IMDB: ${directorEncontrado.calificacionIMDB}")
+        println("En rodaje: ${directorEncontrado.enRodaje}")
+    } else {
+        println("No se encontró un director con el nombre $nombre.")
+    }
+}
+
+fun readDirectores() {
+    print("\t\t ****** \n")
+    val directores = loadDirectores()
+    directores.forEach { director ->
+        println("Nombre: ${director.nombre}")
+        println("Fecha de nacimiento: ${director.fechaNacimiento}")
+        println("Películas dirigidas: ${director.peliculasDirigidas}")
+        println("Calificación IMDB: ${director.calificacionIMDB}")
+        println("En rodaje: ${director.enRodaje}")
+        println() // Salto de línea entre cada director
+    }
+    print("\t\t ****** \n")
 }
 
 fun updateDirector(nombre: String, updatedDirector: Director) {
-    val directors = loadDirectors()
-    val index = directors.indexOfFirst { it.nombre == nombre }
+    val directores = loadDirectores()
+    val index = directores.indexOfFirst { it.nombre.equals(nombre, ignoreCase = true) }
     if (index != -1) {
-        directors[index] = updatedDirector
-        saveDirectors(directors)
+        directores[index] = updatedDirector
+        saveDirectores(directores)
+    } else {
+        println("El director con nombre $nombre no se encontró.")
     }
 }
 
 fun deleteDirector(nombre: String) {
-    val directors = loadDirectors()
-    val iterator = directors.iterator()
+    val directores = loadDirectores()
+    val iterator = directores.iterator()
     while (iterator.hasNext()) {
-        if (iterator.next().nombre == nombre) {
+        if (iterator.next().nombre.equals(nombre, ignoreCase = true)) {
             iterator.remove()
             break
         }
     }
-    saveDirectors(directors)
+    saveDirectores(directores)
 }
