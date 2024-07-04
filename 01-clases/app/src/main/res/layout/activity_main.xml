@@ -10,7 +10,6 @@
     <TextView
         android:layout_width="341dp"
         android:layout_height="135dp"
-        android:text="@string/text1"
         android:textAppearance="@style/TextAppearance.AppCompat.Display3"
         android:textColor="@color/color1"
         android:visibility="visible"

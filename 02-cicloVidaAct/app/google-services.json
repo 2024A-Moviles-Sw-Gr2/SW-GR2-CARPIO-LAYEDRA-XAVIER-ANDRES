@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "217383952530",
+    "project_id": "xacl-2024a-sw-gr2",
+    "storage_bucket": "xacl-2024a-sw-gr2.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:217383952530:android:5673ac5f4aa79ccf1f464b",
+        "android_client_info": {
+          "package_name": "com.example.a2024aswgr2xacl"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAglC1tw2tYrWgj8S2ZLF0EEiEC2odkJ9Y"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
