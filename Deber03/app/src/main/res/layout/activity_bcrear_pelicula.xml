@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".BCrearPelicula">
+
+    <TextView
+        android:id="@+id/textView5"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="44dp"
+        android:text="Pelicula"
+        android:textSize="48sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <EditText
+        android:id="@+id/input_nombrePelicula"
+        android:layout_width="230dp"
+        android:layout_height="73dp"
+        android:layout_marginTop="28dp"
+        android:ems="10"
+        android:hint="Nombre de pelicula"
+        android:inputType="text"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.447"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView5" />
+
+    <EditText
+        android:id="@+id/input_fechaEstreno"
+        android:layout_width="232dp"
+        android:layout_height="72dp"
+        android:layout_marginTop="16dp"
+        android:ems="10"
+        android:hint="Fecha de estreno"
+        android:inputType="text"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.469"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/input_nombrePelicula" />
+
+    <EditText
+        android:id="@+id/input_cantidadActores"
+        android:layout_width="235dp"
+        android:layout_height="70dp"
+        android:layout_marginTop="20dp"
+        android:ems="10"
+        android:hint="Cantidad de Actores"
+        android:inputType="number"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.46"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/input_fechaEstreno" />
+
+    <EditText
+        android:id="@+id/input_duracion"
+        android:layout_width="230dp"
+        android:layout_height="62dp"
+        android:layout_marginTop="32dp"
+        android:ems="10"
+        android:hint="Duracion (ms)"
+        android:inputType="numberDecimal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.464"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/input_cantidadActores" />
+
+    <Switch
+        android:id="@+id/input_enCartelera"
+        android:layout_width="164dp"
+        android:layout_height="54dp"
+        android:layout_marginTop="16dp"
+        android:text="En Cartelera"
+        app:layout_constraintEnd_toEndOf="@+id/input_duracion"
+        app:layout_constraintHorizontal_bias="0.463"
+        app:layout_constraintStart_toStartOf="@+id/input_duracion"
+        app:layout_constraintTop_toBottomOf="@+id/input_duracion" />
+
+    <Button
+        android:id="@+id/btn_crear_pelicula"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:text="Crear"
+        app:layout_constraintEnd_toEndOf="@+id/input_enCartelera"
+        app:layout_constraintHorizontal_bias="0.479"
+        app:layout_constraintStart_toStartOf="@+id/input_enCartelera"
+        app:layout_constraintTop_toBottomOf="@+id/input_enCartelera" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
