@@ -12,6 +12,7 @@ import android.widget.Button
 import androidx.activity.result.contract.ActivityResultContracts
 import com.google.android.material.snackbar.Snackbar
 
+
 class MainActivity : AppCompatActivity() {
     fun mostrarSnackbar(texto:String){
         val snack = Snackbar.make(
@@ -117,6 +118,10 @@ class MainActivity : AppCompatActivity() {
         botonSqlite.setOnClickListener {
             irActividad(ECrudEntrenador::class.java)
         }
+        val botonRView = findViewById<Button>(R.id.btn_recycler_view)
+        botonRView.setOnClickListener {
+            irActividad(FRecyclerView::class.java)
+        }
     }
     fun irActividad(
         clase: Class<*>
@@ -125,5 +130,4 @@ class MainActivity : AppCompatActivity() {
         startActivity(intent)
     }
 }
-
 
