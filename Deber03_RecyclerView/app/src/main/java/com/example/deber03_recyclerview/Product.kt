@@ -1,4 +1,3 @@
 package com.example.deber03_recyclerview
 
-class Product {
-}
+data class Product(val name: String, val image: Int, val price: Double)

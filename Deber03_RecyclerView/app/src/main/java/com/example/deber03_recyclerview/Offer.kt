@@ -1,4 +1,3 @@
 package com.example.deber03_recyclerview
 
-class Offer {
-}
+data class Offer(val description: String, val image: Int)
