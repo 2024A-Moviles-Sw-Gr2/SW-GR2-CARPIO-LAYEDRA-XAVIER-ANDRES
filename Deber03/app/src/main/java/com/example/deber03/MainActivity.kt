@@ -2,110 +2,114 @@ package com.example.deber03
 
 import android.content.Intent
 import android.os.Bundle
-import android.view.ContextMenu
 import android.view.MenuItem
 import android.view.View
-import android.widget.AdapterView
-import android.widget.ArrayAdapter
-import android.widget.Button
 import android.widget.ListView
-import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
+import android.widget.Button
+import android.widget.PopupMenu
 
 class MainActivity : AppCompatActivity() {
-
-    val arreglo = BBaseDatosMemoria.arregloBDirector
-    private lateinit var adaptador: ArrayAdapter<Director>
-    private var posicionItemSeleccionado = -1 // Declara la variable aquí
+    private lateinit var listView: ListView
+    private lateinit var databaseHelper: DatabaseHelper
+    private lateinit var directorAdapter: DirectorAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
         setContentView(R.layout.activity_main)
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.layout_main)) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
+
+        databaseHelper = DatabaseHelper(this)
+        listView = findViewById(R.id.lv_list_view)
+        val btnCrearArtista: Button = findViewById(R.id.btn_crearArtista)
+
+        // Obtener la lista de directores de la base de datos
+        val directorList = databaseHelper.getAllDirectors()
+
+        // Inicializar el DirectorAdapter con la lista de directores
+        directorAdapter = DirectorAdapter(this, directorList.toMutableList())
+        listView.adapter = directorAdapter
+
+        // Configurar el botón para crear un nuevo director
+        btnCrearArtista.setOnClickListener {
+            val intent = Intent(this, CrearDirector::class.java)
+            startActivity(intent)
         }
-        val listView = findViewById<ListView>(R.id.lv_list_view)
-        adaptador = ArrayAdapter(
-            this, // contexto
-            android.R.layout.simple_list_item_1, // layout xml a usar
-            arreglo
-        )
-        listView.adapter = adaptador
 
-        val botonAnadirListView = findViewById<Button>(R.id.btn_crearArtista)
-        botonAnadirListView.setOnClickListener {
-            irActividad(BCrearDirector::class.java, REQUEST_CODE_ADD_OR_EDIT)
+        // Configurar el listener para el clic largo en un director
+        listView.setOnItemLongClickListener { _, view, position, _ ->
+            showPopupMenu(view, position)
+            true
         }
 
-        registerForContextMenu(listView) // NUEVA LINEA
-    }
+        // Configurar el listener para el clic en un director
+        listView.setOnItemClickListener { _, _, position, _ ->
+            val directorSeleccionado = directorAdapter.getItem(position)
 
-    private fun irActividad(clase: Class<*>, requestCode: Int) {
-        val intent = Intent(this, clase)
-        startActivityForResult(intent, requestCode)
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == REQUEST_CODE_ADD_OR_EDIT && resultCode == RESULT_OK) {
-            adaptador.notifyDataSetChanged() // ACTUALIZA UI
-        }
-    }
-
-    override fun onCreateContextMenu(
-        menu: ContextMenu?,
-        v: View?,
-        menuInfo: ContextMenu.ContextMenuInfo?
-    ){
-        super.onCreateContextMenu(menu,v,menuInfo)
-        // llenamos opciones del menu
-        val inflater = menuInflater
-        inflater.inflate(R.menu.menu, menu)
-        // Obtener id
-        val info = menuInfo as AdapterView.AdapterContextMenuInfo
-        val posicion = info.position
-        posicionItemSeleccionado = posicion
-    }
-
-    override fun onContextItemSelected(item: MenuItem): Boolean {
-        return when (item.itemId) {
-            R.id.mi_editar -> {
-                // Obtener el director seleccionado
-                val directorSeleccionado = arreglo[posicionItemSeleccionado]
-
-                // Crear el Intent y pasar el director como extra
-                val intent = Intent(this, BCrearDirector::class.java)
-                intent.putExtra("director", directorSeleccionado)
-                startActivityForResult(intent, REQUEST_CODE_ADD_OR_EDIT)
-                adaptador.notifyDataSetChanged()
-                true
+            // Crear un Intent para navegar a la actividad PeliculaList
+            val intent = Intent(this, PeliculaList::class.java).apply {
+                // Pasar datos del director seleccionado a la actividad PeliculaList
+                putExtra("directorId", directorSeleccionado?.idDirector)
+                putExtra("directorNombre", directorSeleccionado?.nombre)
             }
-            R.id.mi_eliminar -> {
-                val directorSeleccionado = arreglo[posicionItemSeleccionado]
-                BBaseDatosMemoria.arregloBDirector.remove(directorSeleccionado)
-                adaptador.notifyDataSetChanged()
-                true
-            }
-            R.id.mi_verPeliculas -> {
-                val directorSeleccionado = arreglo[posicionItemSeleccionado]
-                // Crear el Intent y pasar el director como extra
-                val intent = Intent(this, BPeliculas::class.java)
-                intent.putExtra("director", directorSeleccionado)
-                startActivityForResult(intent, REQUEST_CODE_ADD_OR_EDIT)
-                adaptador.notifyDataSetChanged()
-
-                true
-            }
-            else -> super.onContextItemSelected(item)
+            startActivity(intent)
         }
+
     }
 
-    companion object {
-        const val REQUEST_CODE_ADD_OR_EDIT = 1
+    override fun onResume() {
+        super.onResume()
+
+        // Actualizar la lista de directores al regresar a la MainActivity
+        val directoresActualizados = databaseHelper.getAllDirectors()
+        directorAdapter.clear()
+        directorAdapter.addAll(directoresActualizados)
+        directorAdapter.notifyDataSetChanged()
+    }
+
+    private fun showPopupMenu(view: View, position: Int) {
+        val popupMenu = PopupMenu(this, view)
+        popupMenu.inflate(R.menu.menu2)
+        popupMenu.setOnMenuItemClickListener { item: MenuItem ->
+            when (item.itemId) {
+                R.id.mi_editar -> {
+                    editarDirector(position)
+                    true
+                }
+                R.id.mi_eliminar -> {
+                    eliminarDirector(position)
+                    true
+                }
+                else -> false
+            }
+        }
+        popupMenu.show()
+    }
+
+    private fun editarDirector(position: Int) {
+        val director = directorAdapter.getItem(position)
+
+        val intent = Intent(this, CrearDirector::class.java).apply {
+            putExtra("directorId", director?.idDirector)
+            putExtra("directorNombre", director?.nombre)
+            putExtra("directorFechaNacimiento", director?.fechaNacimiento?.time)
+            putExtra("directorPeliculasDirigidas", director?.peliculasDirigidas)
+            putExtra("directorCalificacionIMDB", director?.calificacionIMDB)
+            putExtra("directorEnRodaje", director?.enRodaje)
+        }
+
+        startActivity(intent)
+    }
+
+    private fun eliminarDirector(position: Int) {
+        val director = directorAdapter.getItem(position)
+
+        // Eliminar el director de la base de datos
+        director?.let {
+            databaseHelper.deleteDirector(it.idDirector)
+        }
+
+        // Remover el director de la lista en el adaptador
+        directorAdapter.remove(position)
+        directorAdapter.notifyDataSetChanged()
     }
 }

@@ -19,7 +19,6 @@ import java.io.IOException
 
 class MainActivity : AppCompatActivity() {
 
-    private lateinit var dbHelper: AlbumDatabaseHelper
     private lateinit var albumAdapter: AlbumAdapter
     private lateinit var dbHelperAux: DatabaseHelper
 

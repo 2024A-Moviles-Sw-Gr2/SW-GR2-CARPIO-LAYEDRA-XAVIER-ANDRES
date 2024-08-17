@@ -5,7 +5,7 @@
     android:id="@+id/layout_crear_director"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".BCrearDirector">
+    tools:context=".CrearDirector">
 
     <TextView
         android:id="@+id/textView"
